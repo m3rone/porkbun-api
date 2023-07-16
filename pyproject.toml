@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "porkbun-api"
+version = "1.0"
+authors = [
+  { name="mazer", email="contact@m3r.one" },
+]
+
+description = "A Python wrapper for Porkbun API with extra features and shortcuts"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+ "certifi==2023.5.7",
+ "charset-normalizer==3.2.0",
+ "idna==3.4",
+ "requests==2.31.0",
+ "urllib3==2.0.3",
+]
+
+[project.urls]
+"Homepage" = "https://codeberg.org/m3r/porkbun-api"
+"Bug Tracker" = "https://codeberg.org/m3r/porkbun-api/issues"
