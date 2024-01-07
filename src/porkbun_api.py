@@ -1,4 +1,5 @@
-import requests as req
+import requests as req # type: ignore
+from typing import Optional
 
 APIKEY = ""
 SECRETAPIKEY = ""
@@ -51,11 +52,14 @@ def nsupdate(domain:str, nslist:list, apikey:str = "", secretapikey:str = ""):
     if msg := checkError(nsurequest):
         raise PorkbunError(msg)
 
-def create(domain:str, rtype:str, content:str, apikey:str = "", secretapikey:str = "", subdomain:str = "",  ttl:int = 600):
+def create(domain:str, rtype:str, content:str, apikey:str = "", secretapikey:str = "", subdomain:str = "",  ttl:int = 600, priority: Optional[int] = None):
     if rtype not in ALLOWEDTYPES:
         return
     apikey, secretapikey = defaultKeysIfNone(apikey, secretapikey)
-    crequest = req.post(CREATEURI.format(domain = domain), json = {"secretapikey" : secretapikey, "apikey" : apikey, "type" : rtype, "name" : subdomain, "ttl" : ttl, "content" : content})
+    cmd_elements = {"secretapikey": secretapikey, "apikey": apikey, "type": rtype, "name": subdomain, "ttl": ttl, "content": content}
+    if priority:
+        cmd_elements["prio"] = priority
+    crequest = req.post(CREATEURI.format(domain = domain), json={**cmd_elements})
     crequest.raise_for_status()
     if msg := checkError(crequest):
         raise PorkbunError(msg)
@@ -68,9 +72,12 @@ def read(domain:str, rtype:str, subdomain:str = "", apikey:str = "", secretapike
         raise PorkbunError(msg)
     return rrequest.json()["records"]
 
-def update(domain:str, rtype:str, content:str, subdomain:str = "", apikey:str = "", secretapikey:str = "", ttl:int = 600):
+def update(domain:str, rtype:str, content:str, subdomain:str = "", apikey:str = "", secretapikey:str = "", ttl:int = 600, priority: Optional[int] = None):
     apikey, secretapikey = defaultKeysIfNone(apikey, secretapikey)
-    urequest = req.post(UPDATEURI.format(domain = domain, type = rtype, subdomain = subdomain), json = {"secretapikey" : secretapikey, "apikey" : apikey, "content" : content, "ttl" : ttl})
+    cmd_elements = {"secretapikey": secretapikey, "apikey": apikey, "content": content, "ttl": ttl}
+    if priority:
+        cmd_elements["prio"] = priority
+    urequest = req.post(UPDATEURI.format(domain = domain, type = rtype, subdomain = subdomain), json = {**cmd_elements})
     urequest.raise_for_status()
     if msg := checkError(urequest):
         raise PorkbunError(msg)
