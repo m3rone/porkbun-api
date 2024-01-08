@@ -27,7 +27,7 @@ Available functions and arguments:
   - Does not return anything, changes the authoritative nameservers for given domain.
 - create()
   - Requires `domain`, `rtype` *(string of the record type such as A, AAAA, MX, etc)*, and `content` *(string value for said request type such as the IP address)*.
-  - Optional: `subdomain` *(string subdomain for said domain)* and `ttl` *(integer number for time to live, default and minimum for Porkbun is 600)*.
+  - Optional: `subdomain` *(string subdomain for said domain)* and `ttl` *(integer number for time to live, default and minimum for Porkbun is 600)*. `prio` *(integer priority for record types that support it)*
   - Does not return anything. Creates a new DNS record with given arguments.
 - read()
   - Requires `domain`, `rtype`.
@@ -35,7 +35,7 @@ Available functions and arguments:
   - Returns a [list of records](https://porkbun.com/api/json/v3/documentation#DNS%20Retrieve%20Records%20by%20Domain,%20Subdomain%20and%20Type).
 - update()
   - Requires `domain`, `rtype`, and `content`.
-  - Optional: `name` and `ttl`.
+  - Optional: `name` `ttl`, and `prio`.
   - Does not return anything. Updates the matching record with given `content`
 - delete()
   - Requires `domain` and `rtype`.
@@ -44,6 +44,7 @@ Available functions and arguments:
 - ddns_update()
   - Requires `domain`.
   - Optional: `ip` *(the string IP address to update the record with. If not given, uses the return of ping() as IP)*, `subdomain`, and `ipv4only`.
+  - Does not return anything. Updates the `domain` or `subdomain`'s A or AAAA record depending on the IP type given.
 
 ### Examples
 
