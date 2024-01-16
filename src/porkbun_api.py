@@ -54,7 +54,7 @@ def nsupdate(domain:str, nslist:list, apikey:str = "", secretapikey:str = ""):
 
 def create(domain:str, rtype:str, content:str, apikey:str = "", secretapikey:str = "", subdomain:str = "",  ttl:int = 600, priority: Optional[int] = None):
     if rtype not in ALLOWEDTYPES:
-        return
+        raise PorkbunError(f"Type {rtype} is not a valid record type supported by Porkbun")
     apikey, secretapikey = defaultKeysIfNone(apikey, secretapikey)
     cmd_elements = {"secretapikey": secretapikey, "apikey": apikey, "type": rtype, "name": subdomain, "ttl": ttl, "content": content}
     if priority:
@@ -65,6 +65,8 @@ def create(domain:str, rtype:str, content:str, apikey:str = "", secretapikey:str
         raise PorkbunError(msg)
 
 def read(domain:str, rtype:str, subdomain:str = "", apikey:str = "", secretapikey:str = ""):
+    if rtype not in ALLOWEDTYPES:
+        raise PorkbunError(f"Type {rtype} is not a valid record type supported by Porkbun")
     apikey, secretapikey = defaultKeysIfNone(apikey, secretapikey)
     rrequest = req.post(READURI.format(domain = domain, type = rtype, subdomain = subdomain), json = {"secretapikey" : secretapikey, "apikey" : apikey})
     rrequest.raise_for_status()
@@ -73,6 +75,8 @@ def read(domain:str, rtype:str, subdomain:str = "", apikey:str = "", secretapike
     return rrequest.json()["records"]
 
 def update(domain:str, rtype:str, content:str, subdomain:str = "", apikey:str = "", secretapikey:str = "", ttl:int = 600, priority: Optional[int] = None):
+    if rtype not in ALLOWEDTYPES:
+        raise PorkbunError(f"Type {rtype} is not a valid record type supported by Porkbun")
     apikey, secretapikey = defaultKeysIfNone(apikey, secretapikey)
     cmd_elements = {"secretapikey": secretapikey, "apikey": apikey, "content": content, "ttl": ttl}
     if priority:
@@ -83,6 +87,8 @@ def update(domain:str, rtype:str, content:str, subdomain:str = "", apikey:str = 
         raise PorkbunError(msg)
 
 def delete(domain:str, rtype:str, subdomain:str = "", apikey:str = "", secretapikey:str = ""):
+    if rtype not in ALLOWEDTYPES:
+        raise PorkbunError(f"Type {rtype} is not a valid record type supported by Porkbun")
     apikey, secretapikey = defaultKeysIfNone(apikey, secretapikey)
     drequest = req.post(DELETEURI.format(domain = domain, type = rtype, subdomain = subdomain), json = {"secretapikey" : secretapikey, "apikey" : apikey})
     drequest.raise_for_status()
