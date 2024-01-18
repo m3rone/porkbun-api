@@ -1,6 +1,6 @@
 # THIS IS A MIRROR. CONTRIBUTE ON [CODEBERG](https://codeberg.org/m3r/porkbun-api) Porkbun API 
 
-THIS IS A MIRROR. CONTRIBUTE ON [CODEBERG](https://codeberg.org/m3r/porkbun-api)
+THIS IS A MIRROR. CONTRIBUTE ON [CODEBERG](https://codeberg.org/m3r/porkbun-api) OR MAIL IN YOUR PATCHES
 
 This is an API wrapper for Porkbun written in Python with few extra features/shortcuts.
 
