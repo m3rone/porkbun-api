@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "porkbun-api"
-version = "1.1.0"
+version = "1.2.0"
 authors = [
   { name="mazer", email="contact@m3r.one" },
 ]
@@ -19,11 +19,11 @@ classifiers = [
 ]
 
 dependencies = [
- "certifi==2023.5.7",
- "charset-normalizer==3.2.0",
- "idna==3.4",
+ "certifi==2024.2.2",
+ "charset-normalizer==3.3.2",
+ "idna==3.6",
  "requests==2.31.0",
- "urllib3==2.0.3",
+ "urllib3==2.2.1",
 ]
 
 [project.urls]
