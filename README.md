@@ -17,7 +17,9 @@ Or you can grab a .whl or .tar.gz file from [Codeberg releases](https://codeberg
 This wrapper supports everything other than operations with ID's for now.
 
 Available functions and arguments:
-**Please keep in mind every function requires an `apikey` and `secretapikey` arguments**, but you can set **`APIKEY`** and **`SECRETAPIKEY`** variables with their respective values and not have to give keys as arguments at every function call.
+**Please keep in mind every function requires an `apikey` and `secretapikey` arguments**, but you can set **`APIKEY`** and **`SECRETAPIKEY`** variables in the code or **`PORKBUN_APIKEY`** and **`PORKBUN_SECRETAPIKEY`** environment variables with their respective values and not have to give keys as arguments at every function call.
+
+Key precedence is environment variable > code variable > function argument. Please note at the moment you can not mix and match different ways of providing your keys
 
 - ping()
   - Optional: `ipv4only` *(takes True or False and returns IPv4 only if True and IPv6 if available otherwise. Default = True)*.
@@ -52,8 +54,8 @@ Available functions and arguments:
 import porkbun_api as pb
 from time import sleep # only as an example, not required.
 
-pb.APIKEY = "pk1_..."
-pb.SECRETAPIKEY = "sk1_..."
+pb.APIKEY = "pk1_..." # or the env var PORKBUN_APIKEY="pk1_..."
+pb.SECRETAPIKEY = "sk1_..." # or the env var PORKBUN_SECRETAPIKEY="sk1_..."
 
 pb.ping()
 
