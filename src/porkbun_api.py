@@ -1,5 +1,6 @@
-import requests as req # type: ignore
+import requests as req
 from typing import Optional
+from os import getenv
 
 APIKEY = ""
 SECRETAPIKEY = ""
@@ -32,7 +33,9 @@ class PorkbunError(Exception):
 
 def defaultKeysIfNone(api, secret):
     keylist = (api, secret)
-    if not any(keylist):
+    if all(envkeys := (getenv("PORKBUN_APIKEY", ""), getenv("PORKBUN_SECRETAPIKEY", ""))): # defaults set to "" because pyright cant comprehend that all() checking whether both env vars exist
+        return envkeys
+    elif not any(keylist):
         return (APIKEY, SECRETAPIKEY)
     elif all(keylist):
         return keylist
