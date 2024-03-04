@@ -57,7 +57,7 @@ from time import sleep # only as an example, not required.
 pb.APIKEY = "pk1_..." # or the env var PORKBUN_APIKEY="pk1_..."
 pb.SECRETAPIKEY = "sk1_..." # or the env var PORKBUN_SECRETAPIKEY="sk1_..."
 
-pb.ping()
+print(pb.ping())
 
 pb.create(domain = "m3r.one", rtype = "A", content = "23.94.123.251")
 
