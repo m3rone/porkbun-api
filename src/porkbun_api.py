@@ -114,4 +114,4 @@ def ddns_update(domain:str, ip:str = "", subdomain:str = "", apikey:str = "", se
         ipaddr = ip
     else:
         ipaddr = ping(apikey = apikey, secretapikey = secretapikey, ipv4only = False if not ipv4only else True)
-    update(domain, "A" if ipv4only or ":" not in ip else "AAAA", subdomain, ipaddr, apikey = apikey, secretapikey = secretapikey)
+    update(domain, "A" if ipv4only or ":" not in ip else "AAAA", subdomain = subdomain, content = ipaddr, apikey = apikey, secretapikey = secretapikey)
