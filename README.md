@@ -10,7 +10,7 @@ This project is subject to breaking changes as Porkbun API may change and/or bec
 You can install this through PyPi with pip:
 `pip install porkbun-api`
 
-Or you can grab a .whl or .tar.gz file from [Codeberg releases](https://codeberg.org/m3r/porkbun-api/releases).
+Or you can grab a .whl or .tar.gz file from [Github releases](https://github.com/m3rone/porkbun-api/releases).
 
 ### Usage
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "porkbun-api"
-version = "1.2.0"
+version = "1.2.1"
 authors = [
   { name="mazer", email="contact@m3r.one" },
 ]
@@ -27,5 +27,5 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://codeberg.org/m3r/porkbun-api"
-"Bug Tracker" = "https://codeberg.org/m3r/porkbun-api/issues"
+"Homepage" = "https://github.com/m3rone/porkbun-api"
+"Bug Tracker" = "https://github.com/m3rone/porkbun-api/issues"
