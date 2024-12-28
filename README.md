@@ -1,4 +1,7 @@
-# Porkbun API
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/ddda2ca6-b393-4629-9111-209362dda847" alt="porkbun-api project logo" width="224">
+  <h1>Porkbun API</h1>
+</div>
 
 This is an API wrapper for Porkbun written in Python with few extra features/shortcuts.
 
