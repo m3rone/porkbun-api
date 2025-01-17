@@ -5,18 +5,18 @@ from os import getenv
 APIKEY = ""
 SECRETAPIKEY = ""
 
-PINGURI = "https://porkbun.com/api/json/v3/ping"
+PINGURI = "https://api.porkbun.com/api/json/v3/ping"
 V4ONLYPINGURI = "https://api-ipv4.porkbun.com/api/json/v3/ping"
 
-NSUPDATEURI = "https://porkbun.com/api/json/v3/domain/updateNS/{domain}"
+NSUPDATEURI = "https://api.porkbun.com/api/json/v3/domain/updateNS/{domain}"
 
-CREATEURI = "https://porkbun.com/api/json/v3/dns/create/{domain}"
+CREATEURI = "https://api.porkbun.com/api/json/v3/dns/create/{domain}"
 
-READURI = "https://porkbun.com/api/json/v3/dns/retrieveByNameType/{domain}/{type}/{subdomain}"
+READURI = "https://api.porkbun.com/api/json/v3/dns/retrieveByNameType/{domain}/{type}/{subdomain}"
 
-UPDATEURI = "https://porkbun.com/api/json/v3/dns/editByNameType/{domain}/{type}/{subdomain}"
+UPDATEURI = "https://api.porkbun.com/api/json/v3/dns/editByNameType/{domain}/{type}/{subdomain}"
 
-DELETEURI = "https://porkbun.com/api/json/v3/dns/deleteByNameType/{domain}/{type}/{subdomain}"
+DELETEURI = "https://api.porkbun.com/api/json/v3/dns/deleteByNameType/{domain}/{type}/{subdomain}"
 
 ALLOWEDTYPES = ["A", "MX", "CNAME", "ALIAS", "TXT", "NS", "AAAA", "SRV", "TLSA", "CAA"]
 
