@@ -20,7 +20,7 @@ UPDATEURI = "https://api.porkbun.com/api/json/v3/dns/editByNameType/{domain}/{ty
 
 DELETEURI = "https://api.porkbun.com/api/json/v3/dns/deleteByNameType/{domain}/{type}/{subdomain}"
 
-ALLOWEDTYPES = ["A", "MX", "CNAME", "ALIAS", "TXT", "NS", "AAAA", "SRV", "TLSA", "CAA"]
+ALLOWEDTYPES = Literal["A", "MX", "CNAME", "ALIAS", "TXT", "NS", "AAAA", "SRV", "TLSA", "CAA"]
 
 FORWARDTYPES = Literal["temporary", "permament"]
 
@@ -166,7 +166,14 @@ class _MethodsHelper: # This will run all the calls, handle errors, etd.
     
     
 class Porkbun(_MethodsHelper):
-    def __init__(self, apikey:str, secretapikey:str): #TODO docstring
+    """Porkbun API Methods"""
+    def __init__(self, apikey:str, secretapikey:str):
+        """Get data from the Porkbun API
+
+        Args:
+            apikey (str): Your API Key
+            secretapikey (str): Your Secret API Key 
+        """
         super().__init__(apikey, secretapikey)
         
         # Inititiate the "subclasses".  They're not really subclasses but IDK what else to call them
@@ -182,6 +189,7 @@ class Porkbun(_MethodsHelper):
     
 
 class _DomainMethods(_MethodsHelper):
+    """Domain API Methods"""
     def __init__(self, apikey:str, secretapikey:str): #TODO docstring
         super().__init__(apikey, secretapikey)
         self.url = "domain/"
@@ -216,10 +224,10 @@ class _DomainMethods(_MethodsHelper):
         resp = self._requester(url, params)
         return resp
     
-    def get_url_forwarding(self):
-        url = self.url+ f""
+    def get_url_forwarding(self, domain:str):
+        url = self.url+ f"getUrlForwarding/{domain}"
         resp = self._requester(url)
-        return resp
+        return resp["forwards"]
     
     def add_url_forwarding(self, domain:str, location:str, forward_type:FORWARDTYPES, include_path:bool, also_forward_subdomains:bool, subdomain:Optional[str]=None):
         url = self.url+ f"addUrlForward/{domain}"
@@ -231,69 +239,75 @@ class _DomainMethods(_MethodsHelper):
             "wildcard": "yes" if also_forward_subdomains else "no",
         }
         resp = self._requester(url, params=params)
-        return resp
+        return resp #TODO this shouldn't return anything
     
-    def delete_url_forwarding(self):
-        url = self.url+ f""
+    def delete_url_forwarding(self, domain:str, record_id:str|int):
+        url = self.url+ f"deleteUrlForward/{domain}/{record_id}"
         resp = self._requester(url)
-        return resp
+        return resp #TODO this shouldn't return anything
     
-    def get_glue_record(self): #TODO is it a single record or multiple?
-        url = self.url+ f""
+    def get_glue_records(self, domain:str):
+        url = self.url+ f"getGlue/{domain}"
         resp = self._requester(url)
-        return resp
+        return resp["hosts"]
     
-    def add_glue_record(self):
-        url = self.url+ f""
-        resp = self._requester(url)
-        return resp
+    def add_glue_record(self, domain:str, subdomain:str, ips:list):
+        url = self.url+ f"createGlue/{domain}/{subdomain}"
+        params = {"ips": ips}
+        resp = self._requester(url, params=params)
+        return resp #TODO this shouldn't return anything
     
-    def update_glue_record(self):
-        url = self.url+ f""
-        resp = self._requester(url)
-        return resp
+    def update_glue_record(self, domain:str, subdomain:str, ips:list):
+        url = self.url+ f"updateGlue/{domain}/{subdomain}"
+        params = {"ips": ips}
+        resp = self._requester(url, params=params)
+        return resp #TODO this shouldn't return anything
     
-    def delete_glue_record(self):
-        url = self.url+ f""
+    def delete_glue_record(self, domain:str, subdomain:str):
+        url = self.url+ f"deleteGlue/{domain}/{subdomain}"
         resp = self._requester(url)
-        return resp
+        return resp #TODO this shouldn't return anything
     
 
 class _DNSMethods(_MethodsHelper):
+    """DNS API Methods"""
     def __init__(self, apikey:str, secretapikey:str): #TODO docstring
         super().__init__(apikey, secretapikey)
+        self.url = "dns/"
         
     
     def get_record(self, domain:str, subdomain:Optional[str]=None, record_type:Optional[str]=None, record_id:Optional[int|str]=None):
         if record_id == None and (subdomain == None or record_type == None):
-            raise ValueError("Must provide a DNS record ID or subdomain and record type")
+            raise ValueError("Must provide a record ID or subdomain and record type")
         
-        url = f"/dns/retrieveByNameType/{domain}/"
         if record_id != None:
-            url += record_id
+            url = self.url+ f"/retrieve/{domain}/{record_id}"
         else:
-            url += f"{record_type}/{subdomain}"
-
-        resp = requests.post(url=URL_BASE+url,json=auth_json)
-        if resp.status_code != 200:
-            raise Exception(resp) # TODO flesh this out and log the error somewhere
-        elif len(jloads(resp.text)['records']) == 0:
-            raise Exception(resp) #TODO bad
-        else:
-            return jloads(resp.text)['records'][0] # Select the record
+            url = self.url+ f"retrieveByNameType/{domain}/{record_type}/{subdomain}"
+        resp = self._requester(url)
+        return resp["records"]
     
-    def add_record(self): #TODO could also be "create_record" to match documentation
-        pass
+    def add_record(self, domain:str, content:str, record_type:str, name:Optional[str]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[int]=None): #TODO could also be "create_record" to match documentation
+        url = self.url+ f"create/{domain}"
+        params = {
+            "name": name,
+            "type": record_type,
+            "content": content,
+            "ttl": ttl,
+            "prio": priority,
+            "notes": notes
+        }
+        resp = self._requester(url, params=params)
+        return resp # Returns the ID
     
-    def update_record(self, domain:str, content:str, record_id:Optional[int|str], name:Optional[str]=None, record_type:Optional[str]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[int]=None): # Record is optional in case I decide to add edting by subdomain and type later
-        # if name is not provided it'll wipe it out 
+    def update_record(self, domain:str, content:str, record_id:Optional[int|str], name:Optional[str]=None, record_type:Optional[ALLOWEDTYPES]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[int]=None):
+        url = self.url+ f"edit/{domain}/{record_id}"
+       
+        # if name is not provided it'll wipe it out, will need to test the others
         if name == None or ttl == None or priority == None or notes == None or record_type == None: # Get the current record information to fill in
-            record = porkbun_get_record(domain=domain, record_id=record_id)
+            record = self.get_record(domain=domain, record_id=record_id)
         
-        query = f"dns/edit/{domain}/{record_id}"
-        
-        changes = {
-            **auth_json, # Add the auth stuff to the json we're gonna send
+        params = {
             "name": name if name != None else record['name'],
             "type": record_type if record_type != None else record['type'],
             "content": content,
@@ -302,64 +316,60 @@ class _DNSMethods(_MethodsHelper):
             "notes": notes if notes != None else record['notes']
             }
         
-        resp = requests.post(url=URL_BASE+query,json=changes)
-        if resp.status_code != 200 or jloads(resp.text)['status'] != "SUCCESS":
-            raise Exception(resp) # TODO flesh this out and log the error somewhere
+        resp = self._requester(url, params=params)
+        return resp # Returns nothing
         
-    def delete_record(self):
-        pass
+    def delete_record(self, domain:str, subdomain:Optional[str]=None, record_type:Optional[str]=None, record_id:Optional[int|str]=None):
+        if record_id == None and (subdomain == None or record_type == None):
+            raise ValueError("Must provide a record ID or subdomain and record type")
+        
+        if record_id != None:
+            url = self.url+ f"/delete/{domain}/{record_id}"
+        else:
+            url = self.url+ f"deleteByNameType/{domain}/{record_type}/{subdomain}"
+        resp = self._requester(url) # Returns nothing
     
 class _DNSSECMethods(_MethodsHelper):
-    def __init__(self, apikey:str, secretapikey:str): #TODO docstring
+    """DNSSEC API methods
+    """
+    def __init__(self, apikey:str, secretapikey:str):
         super().__init__(apikey, secretapikey)
+        self.url = "dns/"
     
-    def get_record(self, domain:str, subdomain:Optional[str]=None, record_type:Optional[str]=None, record_id:Optional[int|str]=None):
-        if record_id == None and (subdomain == None or record_type == None):
-            raise ValueError("Must provide a DNS record ID or subdomain and record type")
-        
-        url = f"/dns/retrieveByNameType/{domain}/"
-        if record_id != None:
-            url += record_id
-        else:
-            url += f"{record_type}/{subdomain}"
-
-        resp = requests.post(url=URL_BASE+url,json=auth_json)
-        if resp.status_code != 200:
-            raise Exception(resp) # TODO flesh this out and log the error somewhere
-        elif len(jloads(resp.text)['records']) == 0:
-            raise Exception(resp) #TODO bad
-        else:
-            return jloads(resp.text)['records'][0] # Select the record
+    def get_record(self, domain:str):
+        url = self.url+ f"getDbssecRecords/{domain}"
+        resp = self._requester(url)
+        return resp["records"]
     
-    def add_record(self): #TODO could also be "create_record" to match documentation
-        pass
-    
-    def update_record(self, domain:str, content:str, record_id:Optional[int|str], name:Optional[str]=None, record_type:Optional[str]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[int]=None): # Record is optional in case I decide to add edting by subdomain and type later
-        # if name is not provided it'll wipe it out 
-        if name == None or ttl == None or priority == None or notes == None or record_type == None: # Get the current record information to fill in
-            record = porkbun_get_record(domain=domain, record_id=record_id)
-        
-        query = f"dns/edit/{domain}/{record_id}"
-        
-        changes = {
-            **auth_json, # Add the auth stuff to the json we're gonna send
-            "name": name if name != None else record['name'],
-            "type": record_type if record_type != None else record['type'],
-            "content": content,
-            "ttl": ttl if ttl != None else record['ttl'],
-            "prio": priority if priority != None else record['prio'],
-            "notes": notes if notes != None else record['notes']
+    def add_record(self, domain:str, key_tag, alg, digest_type, digest, max_sig_life, key_data_flags, key_data_protocol, key_data_algo, key_data_pub_key): #TODO figure out datatypes
+        url = self.url+ f"createDnssecRecord/{domain}"
+        params = {
+            "keyTag": key_tag,
+            "alg": alg,
+            "digestType": digest_type,
+            "digest": digest,
+            "maxSigLife": max_sig_life,
+            "keyDataFlags": key_data_flags,
+            "keyDataProtocol": key_data_protocol,
+            "keyDataAlgo": key_data_algo,
+            "keyDataPubKey": key_data_pub_key
             }
+        resp = self._requester(url, params)
+        return resp # Returns nothing
         
-        resp = requests.post(url=URL_BASE+query,json=changes)
-        if resp.status_code != 200 or jloads(resp.text)['status'] != "SUCCESS":
-            raise Exception(resp) # TODO flesh this out and log the error somewhere
-        
-    def delete_record(self):
-        pass
+    def delete_record(self, domain:str, key_tag:str|int):
+        url = self.url+ f"deleteDnssecRecord/{domain}/{key_tag}"
+        resp = self._requester(url)
+        return resp # Returns nothing
+    
 
 class _SSLMethods(_MethodsHelper):
     def __init__(self, apikey:str, secretapikey:str): #TODO docstring
         super().__init__(apikey, secretapikey)
+        self.url = "ssl/"
     
+    def get_ssl_bundle(self, domain:str):
+        url = self.url+ f"getDbssecRecords/{domain}"
+        resp = self._requester(url)
+        return resp
     
