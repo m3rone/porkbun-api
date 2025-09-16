@@ -165,7 +165,7 @@ class _MethodsHelper: # This will run all the calls, handle errors, etd.
             
     
     
-class Porkbun(_MethodsHelper):
+class Porkbun:
     """Porkbun API Methods"""
     def __init__(self, apikey:str, secretapikey:str):
         """Get data from the Porkbun API
@@ -174,29 +174,29 @@ class Porkbun(_MethodsHelper):
             apikey (str): Your API Key
             secretapikey (str): Your Secret API Key 
         """
-        super().__init__(apikey, secretapikey)
         
         # Inititiate the "subclasses".  They're not really subclasses but IDK what else to call them
-        self.domain = _DomainMethods(apikey, secretapikey)
-        self.dns = _DNSMethods(apikey, secretapikey)
-        self.dnssec = _DNSSECMethods(apikey, secretapikey)
-        self.ssl = _SSLMethods(apikey, secretapikey)
+        self._mh = _MethodsHelper(apikey, secretapikey )
+        self.domain = _DomainMethods(self._mh)
+        self.dns = _DNSMethods(self._mh)
+        self.dnssec = _DNSSECMethods(self._mh)
+        self.ssl = _SSLMethods(self._mh)
     
     def ping(self): # Requires auth
         url = "ping"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp_dict.Ping.from_json(resp)
     
 
 class _DomainMethods(_MethodsHelper):
     """Domain API Methods"""
-    def __init__(self, apikey:str, secretapikey:str): #TODO docstring
-        super().__init__(apikey, secretapikey)
+    def __init__(self, method_helper: _MethodsHelper):
+        self._mh = method_helper
         self.url = "domain/"
     
     def get_pricing(self): #TODO DOES NOT WORK #TODO allow to run without auth
         url = "/pricing/get"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp['pricing']
     
     def list_all(self, start:Optional[int]=None, include_labels:bool=False):
@@ -205,28 +205,28 @@ class _DomainMethods(_MethodsHelper):
             "start": start,
             "includeLabels": include_labels
         }
-        resp = self._requester(url, params=params)
+        resp = self._mh._requester(url, params=params)
         return resp['domains']
     
     def check_availability(self, domain:str): # TODO could also be called "check" to match documentation
         url = self.url+ f"checkDomain/{domain}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp
     
     def get_nameservers(self, domain:str):
         url = self.url+ f"getNs/{domain}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp
     
     def update_nameservers(self, domain:str, nameservers:list):
         url = self.url+ f"updateNs/{domain}"
         params = {"ns": nameservers}
-        resp = self._requester(url, params)
+        resp = self._mh._requester(url, params)
         return resp
     
     def get_url_forwarding(self, domain:str):
         url = self.url+ f"getUrlForwarding/{domain}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp["forwards"]
     
     def add_url_forwarding(self, domain:str, location:str, forward_type:FORWARDTYPES, include_path:bool, also_forward_subdomains:bool, subdomain:Optional[str]=None):
@@ -238,44 +238,43 @@ class _DomainMethods(_MethodsHelper):
             "includePath": "yes" if include_path else "no",
             "wildcard": "yes" if also_forward_subdomains else "no",
         }
-        resp = self._requester(url, params=params)
+        resp = self._mh._requester(url, params=params)
         return resp #TODO this shouldn't return anything
     
     def delete_url_forwarding(self, domain:str, record_id:str|int):
         url = self.url+ f"deleteUrlForward/{domain}/{record_id}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp #TODO this shouldn't return anything
     
     def get_glue_records(self, domain:str):
         url = self.url+ f"getGlue/{domain}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp["hosts"]
     
     def add_glue_record(self, domain:str, subdomain:str, ips:list):
         url = self.url+ f"createGlue/{domain}/{subdomain}"
         params = {"ips": ips}
-        resp = self._requester(url, params=params)
+        resp = self._mh._requester(url, params=params)
         return resp #TODO this shouldn't return anything
     
     def update_glue_record(self, domain:str, subdomain:str, ips:list):
         url = self.url+ f"updateGlue/{domain}/{subdomain}"
         params = {"ips": ips}
-        resp = self._requester(url, params=params)
+        resp = self._mh._requester(url, params=params)
         return resp #TODO this shouldn't return anything
     
     def delete_glue_record(self, domain:str, subdomain:str):
         url = self.url+ f"deleteGlue/{domain}/{subdomain}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp #TODO this shouldn't return anything
     
 
-class _DNSMethods(_MethodsHelper):
+class _DNSMethods:
     """DNS API Methods"""
-    def __init__(self, apikey:str, secretapikey:str): #TODO docstring
-        super().__init__(apikey, secretapikey)
+    def __init__(self, apikey:str, secretapikey:str, method_helper: _MethodsHelper):
+        self._mh = method_helper
         self.url = "dns/"
         
-    
     def get_record(self, domain:str, subdomain:Optional[str]=None, record_type:Optional[str]=None, record_id:Optional[int|str]=None):
         if record_id == None and (subdomain == None or record_type == None):
             raise ValueError("Must provide a record ID or subdomain and record type")
@@ -284,7 +283,7 @@ class _DNSMethods(_MethodsHelper):
             url = self.url+ f"/retrieve/{domain}/{record_id}"
         else:
             url = self.url+ f"retrieveByNameType/{domain}/{record_type}/{subdomain}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp["records"]
     
     def add_record(self, domain:str, content:str, record_type:str, name:Optional[str]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[int]=None): #TODO could also be "create_record" to match documentation
@@ -297,7 +296,7 @@ class _DNSMethods(_MethodsHelper):
             "prio": priority,
             "notes": notes
         }
-        resp = self._requester(url, params=params)
+        resp = self._mh._requester(url, params=params)
         return resp # Returns the ID
     
     def update_record(self, domain:str, content:str, record_id:Optional[int|str], name:Optional[str]=None, record_type:Optional[ALLOWEDTYPES]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[int]=None):
@@ -316,7 +315,7 @@ class _DNSMethods(_MethodsHelper):
             "notes": notes if notes != None else record['notes']
             }
         
-        resp = self._requester(url, params=params)
+        resp = self._mh._requester(url, params=params)
         return resp # Returns nothing
         
     def delete_record(self, domain:str, subdomain:Optional[str]=None, record_type:Optional[str]=None, record_id:Optional[int|str]=None):
@@ -327,18 +326,18 @@ class _DNSMethods(_MethodsHelper):
             url = self.url+ f"/delete/{domain}/{record_id}"
         else:
             url = self.url+ f"deleteByNameType/{domain}/{record_type}/{subdomain}"
-        resp = self._requester(url) # Returns nothing
+        resp = self._mh._requester(url) # Returns nothing
     
-class _DNSSECMethods(_MethodsHelper):
+class _DNSSECMethods:
     """DNSSEC API methods
     """
-    def __init__(self, apikey:str, secretapikey:str):
-        super().__init__(apikey, secretapikey)
+    def __init__(self, apikey:str, secretapikey:str, method_helper: _MethodsHelper):
+        self._mh = method_helper
         self.url = "dns/"
     
     def get_record(self, domain:str):
         url = self.url+ f"getDbssecRecords/{domain}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp["records"]
     
     def add_record(self, domain:str, key_tag, alg, digest_type, digest, max_sig_life, key_data_flags, key_data_protocol, key_data_algo, key_data_pub_key): #TODO figure out datatypes
@@ -354,22 +353,22 @@ class _DNSSECMethods(_MethodsHelper):
             "keyDataAlgo": key_data_algo,
             "keyDataPubKey": key_data_pub_key
             }
-        resp = self._requester(url, params)
+        resp = self._mh._requester(url, params)
         return resp # Returns nothing
         
     def delete_record(self, domain:str, key_tag:str|int):
         url = self.url+ f"deleteDnssecRecord/{domain}/{key_tag}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp # Returns nothing
     
 
-class _SSLMethods(_MethodsHelper):
-    def __init__(self, apikey:str, secretapikey:str): #TODO docstring
-        super().__init__(apikey, secretapikey)
+class _SSLMethods:
+    def __init__(self, apikey:str, secretapikey:str, method_helper: _MethodsHelper):
+        self._mh = method_helper
         self.url = "ssl/"
     
     def get_ssl_bundle(self, domain:str):
         url = self.url+ f"getDbssecRecords/{domain}"
-        resp = self._requester(url)
+        resp = self._mh._requester(url)
         return resp
     
