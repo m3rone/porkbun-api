@@ -176,7 +176,7 @@ class Porkbun:
         """
         
         # Inititiate the "subclasses".  They're not really subclasses but IDK what else to call them
-        self._mh = _MethodsHelper(apikey, secretapikey )
+        self._mh = _MethodsHelper(apikey, secretapikey)
         self.domain = _DomainMethods(self._mh)
         self.dns = _DNSMethods(self._mh)
         self.dnssec = _DNSSECMethods(self._mh)
@@ -271,7 +271,7 @@ class _DomainMethods(_MethodsHelper):
 
 class _DNSMethods:
     """DNS API Methods"""
-    def __init__(self, apikey:str, secretapikey:str, method_helper: _MethodsHelper):
+    def __init__(self, method_helper: _MethodsHelper):
         self._mh = method_helper
         self.url = "dns/"
         
@@ -331,7 +331,7 @@ class _DNSMethods:
 class _DNSSECMethods:
     """DNSSEC API methods
     """
-    def __init__(self, apikey:str, secretapikey:str, method_helper: _MethodsHelper):
+    def __init__(self, method_helper: _MethodsHelper):
         self._mh = method_helper
         self.url = "dns/"
     
@@ -363,7 +363,7 @@ class _DNSSECMethods:
     
 
 class _SSLMethods:
-    def __init__(self, apikey:str, secretapikey:str, method_helper: _MethodsHelper):
+    def __init__(self, method_helper: _MethodsHelper):
         self._mh = method_helper
         self.url = "ssl/"
     
