@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "porkbun-api"
-version = "2.0.0"
+version = "2.0.1"
 authors = [
   { name="mazer", email="contact@m3r.one" },
 ]
