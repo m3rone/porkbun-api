@@ -162,7 +162,9 @@ class _MethodsHelper: # This will run all the calls, handle errors, etd.
         
         elif resp.status_code == 400:
             raise Exception(resp.content) # TODO HANDLE THIS BETTER
-            
+        
+        else:
+            resp.raise_for_status()
     
     
 class Porkbun:
@@ -286,7 +288,7 @@ class _DNSMethods:
         resp = self._mh._requester(url)
         return resp["records"]
     
-    def add_record(self, domain:str, content:str, record_type:str, name:Optional[str]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[int]=None): #TODO could also be "create_record" to match documentation
+    def add_record(self, domain:str, content:str, record_type:str, name:Optional[str]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[str]=None): #TODO could also be "create_record" to match documentation
         url = self.url+ f"create/{domain}"
         params = {
             "name": name,
@@ -299,9 +301,8 @@ class _DNSMethods:
         resp = self._mh._requester(url, params=params)
         return resp # Returns the ID
     
-    def update_record(self, domain:str, content:str, record_id:Optional[int|str], name:Optional[str]=None, record_type:Optional[ALLOWEDTYPES]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[int]=None):
+    def update_record(self, domain:str, content:str, record_id:Optional[int|str], name:Optional[str]=None, record_type:Optional[ALLOWEDTYPES]=None, ttl:Optional[int]=None, priority:Optional[int]=None, notes:Optional[str]=None):
         url = self.url+ f"edit/{domain}/{record_id}"
-       
         # if name is not provided it'll wipe it out, will need to test the others
         if name == None or ttl == None or priority == None or notes == None or record_type == None: # Get the current record information to fill in
             record = self.get_record(domain=domain, record_id=record_id)
