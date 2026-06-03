@@ -6,6 +6,7 @@ class Ping:
     yourIp: str
     xForwardedFor: str
     credentialsValid: bool
+    requestId: str
     
     @classmethod
     def from_json(cls, mapping: dict[str]):
