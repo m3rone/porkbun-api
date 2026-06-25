@@ -76,5 +76,9 @@ It is recommended to use `try` - `except` blocks with every function because it 
 
 Feel free to open issues or contact me in case you wish to see extra features added.
 
+### TODO
+- [ ] Remove all dependencies (WIP [feat/nodeps](https://github.com/m3rone/porkbun-api/tree/feat/nodeps))
+- [ ] Support [upstream v3 API](https://porkbun.com/api/json/v3/documentation/interactive)
+
 ---
 This project is not affiliated with Porkbun LLC.
