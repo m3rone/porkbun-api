@@ -1,8 +1,5 @@
 from typing import Optional
-from helpers import _post, PorkbunError
-
-PINGURI = "https://api.porkbun.com/api/json/v3/ping"
-V4ONLYPINGURI = "https://api-ipv4.porkbun.com/api/json/v3/ping"
+from .helpers import _post, PorkbunError
 
 NSUPDATEURI = "https://api.porkbun.com/api/json/v3/domain/updateNS/{domain}"
 
@@ -36,7 +33,7 @@ def read(domain:str, rtype:str, subdomain:str = ""):
     if rtype not in ALLOWEDTYPES:
         raise PorkbunError(f"Type {rtype} is not a valid record type supported by Porkbun")
     rrequest = _post(READURI.format(domain = domain, type = rtype, subdomain = subdomain))
-    return rrequest.json()["records"]
+    return rrequest["records"]
 
 def update(domain:str, rtype:str, content:str, subdomain:str = "", ttl:int = 600, priority: Optional[int] = None):
     if rtype not in ALLOWEDTYPES:
