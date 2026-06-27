@@ -14,7 +14,7 @@ UPDATEURI = "https://api.porkbun.com/api/json/v3/dns/editByNameType/{domain}/{ty
 
 DELETEURI = "https://api.porkbun.com/api/json/v3/dns/deleteByNameType/{domain}/{type}/{subdomain}"
 
-ALLOWEDTYPES = ["A", "MX", "CNAME", "ALIAS", "TXT", "NS", "AAAA", "SRV", "TLSA", "CAA"]
+ALLOWEDTYPES = ["A", "MX", "CNAME", "ALIAS", "TXT", "NS", "AAAA", "SRV", "TLSA", "CAA", "SSHFP", "HTTPS", "SVCB"]
 
 ALLOWEDTYPES_PRIO = ["SRV", "MX"]
 
