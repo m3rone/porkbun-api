@@ -3,9 +3,6 @@ from typing import Optional
 from os import getenv
 from helpers import _post, _get, PorkbunError
 
-APIKEY = ""
-SECRETAPIKEY = ""
-
 PINGURI = "https://api.porkbun.com/api/json/v3/ping"
 V4ONLYPINGURI = "https://api-ipv4.porkbun.com/api/json/v3/ping"
 
@@ -40,16 +37,6 @@ def defaultKeysIfNone(api, secret):
     return ("", "")
 ##
 
-def ping(apikey:str = "", secretapikey:str = "", ipv4only:bool = True):
-    #apikey, secretapikey = defaultKeysIfNone(apikey, secretapikey)
-    #payload = {"secretapikey" : secretapikey, "apikey" : apikey}
-    #pingrequest = req.post(V4ONLYPINGURI if ipv4only else PINGURI, json = payload)
-    pingrequest = _post(url=V4ONLYPINGURI if ipv4only else PINGURI)
-    #pingrequest.raise_for_status()
-    #if msg := checkError(pingrequest):
-    #    raise PorkbunError(msg)
-    return pingrequest["yourIp"]
-print(ping())
 def nsupdate(domain:str, nslist:list, apikey:str = "", secretapikey:str = ""):
     apikey, secretapikey = defaultKeysIfNone(apikey, secretapikey)
     payload = {"secretapikey" : secretapikey, "apikey" : apikey, "ns": nslist}
