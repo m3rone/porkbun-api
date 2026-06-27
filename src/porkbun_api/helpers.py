@@ -28,7 +28,7 @@ def _get(url:str):
             }
     req = request.Request(url=url, headers=headers, method="GET")
 
-def _post(url:str, body:dict = None):
+def _post(url:str, body:dict = {}):
     keys = _defaultKeysIfNone()
     headers = {
             "Content-Type": "application/json",
