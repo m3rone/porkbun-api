@@ -15,17 +15,27 @@ def _defaultKeysIfNone(): #api, secret):
     #   return keylist
     return ("", "")
 
+#def _checkErr(response):
+#    if response.status == 400:
+#        errMsg = json.load(response.read().decode("utf-8"))["message"]
+#        raise PorkbunError(errMsg)
+
 def _get(url:str):
     keys = _defaultKeysIfNone()
     headers = {
             "X-API-Key": f"{keys[0]}",
             "X-Secret-API-Key": f"{keys[1]}"
             }
+    req = request.Request(url=url, headers=headers, method="GET")
 
-def _post(url:str, body:dict):
+def _post(url:str, body:dict = None):
     keys = _defaultKeysIfNone()
     headers = {
             "Content-Type": "application/json",
             "X-API-Key": f"{keys[0]}",
             "X-Secret-API-Key": f"{keys[1]}"
             }
+    payload = json.dumps(body).encode("utf-8")
+    req = request.Request(url=url, data=payload, headers=headers, method="POST")
+    with request.urlopen(req) as resp:
+        return json.loads(resp.read().decode("utf-8"))
