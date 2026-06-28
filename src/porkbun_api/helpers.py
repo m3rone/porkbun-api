@@ -27,6 +27,8 @@ def _get(url:str):
             "X-Secret-API-Key": f"{keys[1]}"
             }
     req = request.Request(url=url, headers=headers, method="GET")
+    with request.urlopen(req) as resp:
+        return json.loads(resp.read().decode("utf-8"))
 
 def _post(url:str, body:dict = {}):
     keys = _defaultKeysIfNone()
